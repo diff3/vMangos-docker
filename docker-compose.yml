@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+
+  compile:
+    image: vmangos-cmangos:compile
+    env_file:
+      - ./compile/compile.env
+    container_name: vmangos-compile
+    build:
+      context: compile
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+    environment:
+      - TZ=Europe/Stockholm
+    ports:
+      - "3472:3472"
+      - "3443:3443"
+      - "8085:8085"
+    volumes:
+      - ./server:/opt/server:rw
+      - ./etc/core:/opt/core:rw
+    restart: on-failure
+    tty: true
+
+networks:
+  default:
+    name: vmangos-server-network
