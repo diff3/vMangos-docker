@@ -1,30 +1,18 @@
 #!/bin/sh
 
-cd /opt
-
-if [ $DOWNLOAD_SOURCE = 'ON' ]; then
-    git clone https://github.com/cmangos/mangos-tbc
-    git clone https://github.com/cmangos/tbc-db
-fi
-
-if [ $UPDATE_SOURCE = 'ON' ]; then
-   cd /opt/mangos-tbc
+if [ ! -f /opt/core/README.md && ];then
+   cd /opt
+   git clone -b development https://github.com/vmangos/core
+   mkdir -p /opt/core/build
+else
+   cd /opt/core/build
    git pull
-
-   cd /opt/tbc-db
-   git pull
+   make clean
 fi
 
-mkdir -p /opt/mangos-tbc/build
-cd /opt/mangos-tbc/build
+cd /opt/core/build
 
-if [ $CREATE_DIRS = 'ON' ]; then
-    mkdir -p $INSTALL_PREFIX/logs
-    mkdir -p $INSTALL_PREFIX/data
-fi
+cmake .. -DCMAKE_INSTALL_PREFIX=${PREFX} -DSUPPORTED_CLIENT_BUILD=${BUILD} -DUSE_EXTRACTORS=${EXTRACTORS} 
 
-cmake .. -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DBUILD_EXTRACTORS=$EXTRACTORS -DPCH=$PCH -DDEBUG=$DEBUG -DBUILD_PLAYERBOT=$PLAYERBOT -DBUILD_AHBOT=$AHBOT -DBUILD_METRICS=$METRICS -DBUILD_LOGIN_SERVER=$LOGIN_SERVER -DBUILD_GAME_SERVER=$GAME_SERVER -DBUILD_GIT_ID=$GIT_ID -DBUILD_RECASTDEMOMOD=$RECASTDEMOMOD -DBUILD_DOCS=$DOCS -DBUILD_WARNINGS=$WARNINGS -DBUILD_POSTGRESQL=$POSTGRESQL
-
-make clean
-make -j $CORES
+make -j$CORES
 make install

@@ -1,7 +1,6 @@
-FROM ubuntu:20.04
+FROM debian:bullseye
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt install -y tzdata build-essential gcc g++ automake git-core autoconf make patch libmysql++-dev libtool libssl-dev grep binutils zlibc libbz2-dev cmake libboost-all-dev
+RUN apt-get update && apt-get install -y tzdata wget vim tree g++ libace-dev libtbb-dev git cmake libmariadb-dev-compat libmariadb-dev openssl libssl-dev zlib1g-dev checkinstall build-essential 
 
 COPY --chmod=755 entry.sh / 
-# CMD /entry.sh
-CMD /bin/bash
+CMD /entry.sh
