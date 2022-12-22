@@ -21,7 +21,6 @@ services:
       - "8085:8085"
     volumes:
       - ./server:/opt/server:rw
-      - ./etc/core:/opt/core:rw
       - ./etc:/opt/etc:rw
       - ${WOW_PATH}:/opt/wow:rw
     restart: on-failure
