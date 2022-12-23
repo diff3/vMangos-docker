@@ -34,10 +34,17 @@ if [ ! -d "/opt/server/patches" ]; then
    mkdir -p /opt/server/patches
 fi
 
+if [ ! -d "/opt/server/etc" ]; then
+   mkdir -p /opt/server/etc
+fi
+
 cd /opt/etc/core/build
 
-cmake .. -DCMAKE_INSTALL_PREFIX=/opt/server -DSUPPORTED_CLIENT_BUILD=$BUILD -DUSE_EXTRACTORS=$EXTRACTORS 
+cmake .. -DCMAKE_INSTALL_PREFIX=/opt/server -DSERVERS=1 -DSUPPORTED_CLIENT_BUILD=$BUILD -DUSE_EXTRACTORS=$EXTRACTORS 
 
 make clean
 make -j$CORES
 make install
+
+cp /etc/realmd.conf.dist /opt/server/etc
+cp /etc/mangosd.conf.dist /opt/server/etc
