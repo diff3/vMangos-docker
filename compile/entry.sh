@@ -3,17 +3,12 @@
 path='/opt/etc'
 cd $path
 
-echo "Hello"
-
 if [ ! -d "$path/core" ]; then
-   echo "no core"
    git clone -b development https://github.com/vmangos/core
 elif [ -d "$path/core" ] && [ ! -d "$path/core/.git" ]; then
-   echo "core but no .git"
    rm -r $path/core
    git clone -b development https://github.com/vmangos/core
 elif [ -d "$path/core" ] && [ -d "$path/core/.git" ]; then
-   echo "core and .git"
    cd core
    git pull
 fi
