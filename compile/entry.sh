@@ -19,13 +19,24 @@ elif [ -d "$path/core" ] && [ -d "$path/core/.git" ]; then
 fi
 
 if [ ! -d "/opt/etc/core/build" ]; then
-   echo "create build"
    mkdir -p /opt/etc/core/build
 fi
 
-cd $path/core/build
+if [ ! -d "/opt/server/logs" ]; then
+   mkdir -p /opt/server/logs
+fi
 
-cmake .. -DCMAKE_INSTALL_PREFIX=${PREFX} -DSUPPORTED_CLIENT_BUILD=${BUILD} -DUSE_EXTRACTORS=${EXTRACTORS} 
+if [ ! -d "/opt/server/honor" ]; then
+   mkdir -p /opt/server/honor
+fi
+
+if [ ! -d "/opt/server/patches" ]; then
+   mkdir -p /opt/server/patches
+fi
+
+cd /opt/etc/core/build
+
+cmake .. -DCMAKE_INSTALL_PREFIX=/opt/server -DSUPPORTED_CLIENT_BUILD=$BUILD -DUSE_EXTRACTORS=$EXTRACTORS 
 
 make clean
 make -j$CORES

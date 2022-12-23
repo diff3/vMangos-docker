@@ -3,7 +3,7 @@ version: '3.9'
 services:
 
   compile:
-    image: vmangos-cmangos:compile
+    image: vmangos:compile
     env_file:
       - ./compile/compile.env
     container_name: vmangos-compile
@@ -15,14 +15,69 @@ services:
         GROUP_ID: ${GROUP_ID:-0}
     environment:
       - TZ=Europe/Stockholm
-    ports:
-      - "3724:3724"
-      - "3443:3443"
-      - "8085:8085"
     volumes:
       - ./server:/opt/server:rw
       - ./etc:/opt/etc:rw
       - ${WOW_PATH}:/opt/wow:rw
+    restart: on-failure
+    tty: true
+
+  mangosd:
+    image: vmangos:mangosd
+    container_name: vmangos-mangosd
+    build:
+      context: mangosd
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+    environment:
+      - TZ=Europe/Stockholm
+    ports:
+      - "3443:3443"
+      - "8085:8085"
+    volumes:
+      - "./server:/opt/server:rw"
+    restart: on-failure
+    tty: true
+
+  mariadb:
+    image: vmangos:mariadb
+    env_file:
+      - ./mariadb/mariadb.env
+    container_name: vmangos-mariadb
+    hostname: mariadb
+    build:
+      context: mariadb
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+    environment:
+      - MYSQL_ROOT_PASSWORD=pwd
+    # ports:
+    #  - "3306:3306"
+    volumes:
+      - ./etc:/opt/etc:rw
+      - ./server:/opt/server:rw
+    restart: on-failure
+    tty: true
+
+  realmd:
+    image: vmangos:realmd
+    container_name: vmangos-realmd
+    build:
+      context: realmd
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+    environment:
+      - TZ=Europe/Stockholm
+    ports:
+      - "3724:3724"
+    volumes:
+      - "./server:/opt/server:rw"
     restart: on-failure
     tty: true
 
