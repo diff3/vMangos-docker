@@ -42,11 +42,10 @@ mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $LOGS_DB_NAME < /opt/etc/core/sql/mig
 mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $REALM_DB_NAME < /opt/etc/core/sql/migrations/logon_db_updates.sql
 mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $WORLD_DB_NAME < /opt/etc/core/sql/migrations/world_db_updates.sql
 
-echo "Configure users, and removal"
-# mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $REALM_DB_NAME -e "UPDATE account SET gmlevel = '4', locked = '1' WHERE id = '1' LIMIT 1;"
-
-echo "Add user"
-# mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $REALM_DB_NAME -e "INSERT INTO account (username, gmlevel, v, s, expansion, locale) VALUES ('MAPE', 4, '598439E55FF93613E12E89B23A1348D38BDCEA98C77347C2A84EE1CC210C3BDE', 'B09701BDE2AAEF7E068438E831BAA8A2FF8301338C4F6420D26CCF4EA2683A47', 1, 'enUS');"
+echo "Add admin user"
+Imysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $REALM_DB_NAME -e "NSERT INTO account VALUES (1,'ADMIN',0,NULL,'06A84FEBB5A387B6952A7F20E664074887F6F4E4D043C0D670309993B591D6AB','9B8FE0882B6CD340A604F4149BF85F0984F49459BFDFC130D5FDD1F5B3916677','',NULL,'2022-12-27 14:24:49','0.0.0.0',0,0,'00','0000-00-00 00:00:00',0,0,0,0,'','',0,0,NULL,0,0);"
 
 echo "Adding realm"
 mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $REALM_DB_NAME -e "INSERT INTO realmlist (name, address, port, icon, realmflags, timezone, allowedSecurityLevel, population, gamebuild_min, gamebuild_max, realmbuilds) VALUES ('$REALM_NAME', '$REALM_ADRESS', '$REALM_PORT', '$REALM_ICON', '$REALM_FLAG', '$REALM_TIMEZONE', '$REALM_SECURITY', '$REALM_POP', '$REALM_GAMEBUILD_MIN', '$REALM_GAMEBUILD_MAX', '$REALM_BUILD');"
+
+
