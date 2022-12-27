@@ -1,0 +1,120 @@
+version: '3.9'
+
+services:
+
+  compile:
+    image: tbc-cmangos:compile
+    env_file:
+      - ./compile/compile.env
+    container_name: tbc-compile
+    build:
+      context: compile
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+    environment:
+      - TZ=Europe/Stockholm
+    volumes:
+      - ./server:/opt/server:rw
+      - ./etc/mangos-tbc:/opt/mangos-tbc:rw
+    restart: on-failure
+    tty: true
+    profiles:
+      - compile
+  
+  extract: 
+    image: tbc-cmangos:extract
+    env_file:
+      - ./extract/extract.env
+    container_name: tbc-extract
+    build:
+      context: extract
+      dockerfile: Dockerfile
+      args: 
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+    environment:
+      - TZ=Europe/Stockholm
+    volumes: 
+      - "./server:/opt/server:rw" 
+      - "${WOW_PATH}:/opt/wow"
+    restart: on-failure
+    tty: true
+    profiles:
+      - extract
+
+  mangosd: 
+    image: tbc-cmangos:mangosd
+    container_name: tbc-mangosd
+    build:
+      context: mangosd
+      dockerfile: Dockerfile
+      args: 
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+    environment:
+      - TZ=Europe/Stockholm
+    ports:
+      - "3443:3443"
+      - "8085:8085"
+      - "8086:8086" 
+    volumes: 
+      - "./server:/opt/server:rw" 
+    restart: on-failure
+
+  mariadb:
+    image: tbc-cmangos:mariadb
+    env_file:
+      - ./mariadb/mariadb.env
+    container_name: tbc-mariadb
+    hostname: mariadb
+    build:
+      context: mariadb
+      dockerfile: Dockerfile
+      args: 
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+    environment:
+      - MYSQL_ROOT_PASSWORD=pwd
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./etc/tbc-db:/opt/tbc-db:rw
+      - ./etc/mangos-tbc:/opt/mangos-tbc:rw
+    restart: on-failure
+    tty: true
+  
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: tbc-phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_USER=root
+      - PMA_PASSWORD=pwd
+    restart: "no"
+    profiles:
+      - dev
+
+  realmd:
+    image: tbc-cmangos:realmd
+    container_name: tbc-realmd
+    build:
+      context: realmd
+      dockerfile: Dockerfile
+      args: 
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+    environment:
+      - TZ=Europe/Stockholm
+    ports:
+      - "3724:3724"
+    volumes: 
+      - "./server:/opt/server:rw"
+    restart: on-failure
+
+networks:
+  default:
+    name: tbc-server-network

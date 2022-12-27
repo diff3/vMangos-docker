@@ -19,7 +19,6 @@ services:
       - ./server:/opt/server:rw
       - ./etc:/opt/etc:rw
       - ${WOW_PATH}:/opt/wow:rw
-    restart: on-failure
     tty: true
 
   mangosd:
@@ -38,7 +37,7 @@ services:
       - "8085:8085"
     volumes:
       - "./server:/opt/server:rw"
-    restart: on-failure
+    restart: unless-stopped
     tty: true
 
   mariadb:
@@ -60,7 +59,7 @@ services:
     volumes:
       - ./etc:/opt/etc:rw
       - ./server:/opt/server:rw
-    restart: on-failure
+    restart: unless-stopped
     tty: true
 
   realmd:
@@ -78,7 +77,7 @@ services:
       - "3724:3724"
     volumes:
       - "./server:/opt/server:rw"
-    restart: on-failure
+    restart: unless-stopped
     tty: true
 
 networks:
