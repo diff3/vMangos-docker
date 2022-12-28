@@ -7,4 +7,4 @@ RUN apt-get update && apt-get install -y tzdata libace-dev libtbb-dev libmariadb
 WORKDIR /opt/server/bin
 COPY --chmod=755 ./entry.sh /
 
-CMD /entry.sh
+ENTRYPOINT ["/entry.sh"]
