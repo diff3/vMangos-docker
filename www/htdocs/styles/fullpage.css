@@ -1,0 +1,29 @@
+body,html
+{
+overflow:visible;font-family:Proxima Nova,sans-serif
+}
+
+.manas h4
+{
+line-height:40px;font:600 2em RobotoB,sans-serif!important;font-size:24px;border-bottom:2px solid #000;padding:5px 20px 14px
+}
+.manas h4 span
+{
+color:#999
+}
+.manas .mana-input
+{
+min-height:40px;background:#080808!important;margin-left:20px;width:85%;padding:10px 15px;outline:0;border:0;text-transform:none
+}
+.manas .mana-button
+{
+height:40px;background:#101010;width:auto;margin-left:20px!important;margin-bottom:30px!important;padding:10px 15px;outline:0;border:1px solid #000;color:#b9b9b9;text-transform:uppercase;letter-spacing:1.5px;font:300 1em Roboto,sans-serif;text-decoration:none
+}
+.manas .mana-button:hover
+{
+color:#fff
+}
+.mana-label
+{
+line-height:30px;padding-left:20px;padding-right:20px;float:left;display:inline-block;font-size:16px
+}
