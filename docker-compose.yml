@@ -34,6 +34,8 @@ services:
       - TZ=Europe/Stockholm
     ports:
       - "3443:3443"
+      # - "3444:3444" # Offline Chat 
+      # - "7878:7878" # SOAP 
       - "8085:8085"
     volumes:
       - "./server:/opt/server:rw"
