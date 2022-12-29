@@ -83,8 +83,8 @@ services:
     build:
       context: containers/realmd
       <<: *build-shared-conf
-    # ports:
-      # - "3724:3724"
+    ports:
+      - "3724:3724"
     <<: *vmangos-shared-conf
 
   web:
