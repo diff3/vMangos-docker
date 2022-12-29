@@ -1,10 +1,8 @@
-FROM debian:bullseye
+FROM debian:bullseye-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install -y tzdata libace-dev libtbb-dev libmariadb-dev-compat libmariadb-dev 
+RUN apt-get update && apt-get install -y libace-dev libtbb-dev libmariadb-dev-compat libmariadb-dev 
 
 WORKDIR /opt/server/bin
-COPY --chmod=755 ./entry.sh /
+COPY --chmod=755 entry.sh /
 
-ENTRYPOINT ["/entry.sh"]
+ENTRYPOINT ["./realmd -c /opt/server/etc/realmd.conf"]

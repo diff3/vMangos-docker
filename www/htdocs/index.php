@@ -4,11 +4,11 @@
 // Realm database.
 $r_db = "realmd";
 // IP (and port).
-$ip = "127.0.0.1:3306";
+$ip = "mariadb:3306";
 // Username.
 $user = "root";
 // Password.
-$pass = "root";
+$pass = "pwd";
 // End config.
 
 
@@ -16,9 +16,9 @@ $user_chars = "#[^a-zA-Z0-9_\-]#";
 $email_chars = "/^[^0-9][A-z0-9_]+([.][A-z0-9_]+)*[@][A-z0-9_]+([.][A-z0-9_]+)*[.][A-z]{2,4}$/";
 
 $result;
-$con = @mysql_connect($ip, $user, $pass);
+$con = @mysqli_connect($ip, $user, $pass);
 if (!$con) {
-	$result = "> Unable to connect to database: " . mysql_error();
+	$result = "> Unable to connect to database: " . mysqli_error();
 }
 else
 {
@@ -67,7 +67,7 @@ else
             {
                 $soapusername = 'admin';
                 $soappassword = 'admin';
-                $soaphost = "127.0.0.1";
+                $soaphost = "vmangos-mangosd";
                 $soapport = 7878;
                 $command = "account create ";
 

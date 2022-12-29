@@ -5,4 +5,4 @@ RUN apt-get update && apt-get install -y libace-dev libtbb-dev libmariadb-dev-co
 WORKDIR /opt/server/bin
 COPY --chmod=755 entry.sh /
 
-ENTRYPOINT ["/entry.sh"]
+ENTRYPOINT ["./mangosd -c /opt/server/etc/mangosd.conf"]

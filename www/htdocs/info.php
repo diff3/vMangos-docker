@@ -2,15 +2,15 @@
 
 // Configuration.
 // MaNGOSD IP.
-$realmip = "127.0.0.1";
+$realmip = "vmangos-realmd";
 // MaNGOSD port.
 $realmport = "8085";
 // MySQL IP (and port).
-$ip = "127.0.0.1:3306";
+$ip = "vmangos-mariadb:3306";
 // MySQL Username.
 $user = "root";
 // MySQL Password.
-$pass = "root";
+$pass = "pwd";
 // Realm database.
 $r_db = "realmd";
 // Character database.
@@ -104,13 +104,13 @@ $uptime = "N/A";
 $accounts = "N/A";
 $totalchars = "N/A";
 $now = date("H:i:s");
-$con = @mysql_connect($ip, $user, $pass);
+$con = @mysqli_connect($ip, $user, $pass);
     
 function make_players_array(){
 	global $con, $c_db, $pl_array, $maps_a;
     $i=0;
-	$query = @mysql_query("SELECT * FROM " . mysql_real_escape_string($c_db) . ".characters WHERE `online`='1' ORDER BY `name`", $con);
-	while($result = mysql_fetch_assoc($query))
+	$query = @mysqli_query("SELECT * FROM " . $c_db . ".characters WHERE `online`='1' ORDER BY `name`", $con);
+	while($result = mysqli_fetch_assoc($query))
 	{
 		$char_data = ($result['level']);
 		$char_gender = ($result['gender']);
@@ -131,21 +131,21 @@ function make_players_array(){
 }
 
 if (!$con) {
-	$result = "> Unable to connect to database: " . mysql_error();
+	$result = "> Unable to connect to database: " . mysqli_error();
 }
 else
 {
-    $qry = @mysql_query("select address from " . mysql_real_escape_string($r_db) . ".realmlist where id = 1", $con);
+    $qry = @mysqli_query("select address from " . $r_db . ".realmlist where id = 1", $con);
     if ($qry)
     {
-        while ($row = mysql_fetch_assoc($qry))
+        while ($row = mysqli_fetch_assoc($qry))
         {
             $realmip = $row['address'];
         }
     };
     
     unset($qry);
-    $qry = @mysql_query("select name from " . mysql_real_escape_string($r_db) . ".realmlist where id = 1", $con);
+    $qry = @mysqli_query("select name from " . $r_db . ".realmlist where id = 1", $con);
     if ($qry)
     {
         while ($row = mysql_fetch_assoc($qry))
@@ -165,7 +165,7 @@ else
     };
     
     unset($qry);
-    $qry = @mysql_query("SELECT * FROM " . mysql_real_escape_string($r_db) . ".uptime ORDER BY `starttime` DESC LIMIT 1", $con);
+    $qry = @mysqli_query("SELECT * FROM " . mysqli_real_escape_string($r_db) . ".uptime ORDER BY `starttime` DESC LIMIT 1", $con);
     if ($qry)
     {
         $uptime_results = mysql_fetch_array($qry);    
@@ -183,7 +183,7 @@ else
     };
     
     unset($qry);
-    $qry = @mysql_query("select Count(id) from " . mysql_real_escape_string($r_db) . ".account", $con);
+    $qry = @mysqli_query("select Count(id) from " . mysqli_real_escape_string($r_db) . ".account", $con);
     if ($qry)
     {
         while ($row = mysql_fetch_assoc($qry))

@@ -34,17 +34,6 @@ services:
     profiles:
       - compile
 
-  httpd:
-    image: httpd:latest
-    container_name: vmangos-web
-    ports: 
-      - "80:80"
-    <<: *vmangos-shared-conf
-    volumes:
-      - "./www/htdocs:/usr/local/apache2/htdocs:rw"
-    profiles:
-      - web
-
   mangosd:
     image: vmangos:mangosd
     container_name: vmangos-mangosd
@@ -96,6 +85,20 @@ services:
     # ports:
       # - "3724:3724"
     <<: *vmangos-shared-conf
+
+  web:
+    image: vmangos:web
+    container_name: vmangos-web
+    build:
+      context: containers/web
+      <<: *build-shared-conf
+    ports: 
+      - "80:80"
+    <<: *vmangos-shared-conf
+    volumes:
+      - "./www/htdocs:/htdocs:rw"
+    profiles:
+      - web
 
 networks:
   default:
