@@ -24,6 +24,7 @@ services:
     container_name: vmangos-compile
     env_file:
       - ./env/compile.env
+      - ./env/shared.env
     build:
       context: containers/compile
       <<: *build-shared-conf
