@@ -42,12 +42,12 @@ mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $LOGS_DB_NAME < /opt/etc/core/sql/mig
 mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $REALM_DB_NAME < /opt/etc/core/sql/migrations/logon_db_updates.sql
 mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $WORLD_DB_NAME < /opt/etc/core/sql/migrations/world_db_updates.sql
 
+rm /opt/etc/core/sql/migrations/*_db_updates.sql
+
 echo "Add admin user"
 # admin:admin
 mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $REALM_DB_NAME -e "INSERT INTO account VALUES (1,'ADMIN',0,NULL,'06A84FEBB5A387B6952A7F20E664074887F6F4E4D043C0D670309993B591D6AB','9B8FE0882B6CD340A604F4149BF85F0984F49459BFDFC130D5FDD1F5B3916677','',NULL,'2022-12-27 14:24:49','0.0.0.0',0,0,'00','0000-00-00 00:00:00',0,0,0,0,'','',0,0,NULL,0,0);"
-mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $REALM_DB_NAME -e "INSERT INTO account_access (id, gmlevel, RealmID) VALUES (1, 4, 1);
+mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $REALM_DB_NAME -e "INSERT INTO account_access (id, gmlevel, RealmID) VALUES (1, 4, 1);"
 
 echo "Adding realm"
 mysql -u $MYSQL_USERNAME -p$MYSQL_PASSWORD $REALM_DB_NAME -e "INSERT INTO realmlist (name, address, port, icon, realmflags, timezone, allowedSecurityLevel, population, gamebuild_min, gamebuild_max, realmbuilds) VALUES ('$REALM_NAME', '$REALM_ADRESS', '$REALM_PORT', '$REALM_ICON', '$REALM_FLAG', '$REALM_TIMEZONE', '$REALM_SECURITY', '$REALM_POP', '$REALM_GAMEBUILD_MIN', '$REALM_GAMEBUILD_MAX', '$REALM_BUILD');"
-
-

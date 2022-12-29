@@ -1,88 +1,101 @@
 version: '3.9'
 
+x-vmangos-shared-conf: &vmangos-shared-conf
+  # environment:
+
+  volumes:
+    - "./etc:/opt/etc:rw"
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/etc/timezone:/etc/timezone:ro"
+    - "./server:/opt/server:rw"
+  restart: unless-stopped
+  tty: true
+
+x-build-shared-conf: &build-shared-conf
+  dockerfile: Dockerfile
+  args:
+    USER_ID: ${USER_ID:-0}
+    GROUP_ID: ${GROUP_ID:-0}
+
 services:
 
   compile:
     image: vmangos:compile
+    container_name: vmangos-compile
     env_file:
       - ./env/compile.env
-    container_name: vmangos-compile
     build:
       context: containers/compile
-      dockerfile: Dockerfile
-      args:
-        USER_ID: ${USER_ID:-0}
-        GROUP_ID: ${GROUP_ID:-0}
+      <<: *build-shared-conf
     volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/etc/timezone:/etc/timezone:ro"
-      - "./server:/opt/server:rw"
-      - "./etc:/opt/etc:rw"
       - "${WOW_PATH}:/opt/wow:rw"
-    tty: true
+    <<: *vmangos-shared-conf
+    restart: "no"
+    profiles:
+      - compile
+
+  httpd:
+    image: httpd:latest
+    container_name: vmangos-web
+    ports: 
+      - "80:80"
+    <<: *vmangos-shared-conf
+    volumes:
+      - "./www/htdocs:/usr/local/apache2/htdocs:rw"
+    profiles:
+      - web
 
   mangosd:
     image: vmangos:mangosd
     container_name: vmangos-mangosd
     build:
       context: containers/mangosd
-      dockerfile: Dockerfile
-      args:
-        USER_ID: ${USER_ID:-0}
-        GROUP_ID: ${GROUP_ID:-0}
+      <<: *build-shared-conf
     ports:
       - "3443:3443"
-      # - "3444:3444" # Offline Chat 
-      # - "7878:7878" # SOAP 
+      - "3444:3444" 
+      - "7878:7878"
       - "8085:8085"
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/etc/timezone:/etc/timezone:ro"
-      - "./server:/opt/server:rw"
-    restart: unless-stopped
-    tty: true
-
+    <<: *vmangos-shared-conf
+    
   mariadb:
     image: vmangos:mariadb
-    env_file:
-      - ./env/mariadb.env
     container_name: vmangos-mariadb
     hostname: mariadb
+    env_file:
+      - ./env/mariadb.env
+      - ./env/shared.env
     build:
       context: containers/mariadb
-      dockerfile: Dockerfile
-      args:
-        USER_ID: ${USER_ID:-0}
-        GROUP_ID: ${GROUP_ID:-0}
-    environment:
-      - MYSQL_ROOT_PASSWORD=pwd
+      <<: *build-shared-conf
     # ports:
-    #  - "3306:3306"
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/etc/timezone:/etc/timezone:ro"
-      - "./etc:/opt/etc:rw"
-      - "./server:/opt/server:rw"
-    restart: unless-stopped
-    tty: true
+      # - "3306:3306"
+    <<: *vmangos-shared-conf
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: vmangos-phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_USER=root
+      - PMA_PASSWORD=pwd
+    restart: "no"
+    depends_on:
+      - mariadb
+    profiles:
+      - dev
 
   realmd:
     image: vmangos:realmd
     container_name: vmangos-realmd
     build:
       context: containers/realmd
-      dockerfile: Dockerfile
-      args:
-        USER_ID: ${USER_ID:-0}
-        GROUP_ID: ${GROUP_ID:-0}
-    ports:
-      - "3724:3724"
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/etc/timezone:/etc/timezone:ro"
-      - "./server:/opt/server:rw"
-    restart: unless-stopped
-    tty: true
+      <<: *build-shared-conf
+    # ports:
+      # - "3724:3724"
+    <<: *vmangos-shared-conf
 
 networks:
   default:

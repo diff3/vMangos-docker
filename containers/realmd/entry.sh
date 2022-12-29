@@ -8,4 +8,5 @@ sed -i -e '/LogsDir =/ s/= .*/= \"\/opt\/server\/logs\"/' $CONFIG_PATH/realmd.co
 sed -i -e '/PatchesDir =/ s/= .*/= \"\/opt\/server\/patches\"/' $CONFIG_PATH/realmd.conf
 sed -i -e '/LoginDatabaseInfo =/ s/= .*/= \"mariadb\;3306\;mangos\;mangos\;realmd\"/' $CONFIG_PATH/realmd.conf
 
-./realmd -c $CONFIG_PATH/realmd.conf
+# ./realmd -c $CONFIG_PATH/realmd.conf
+/bin/bash
