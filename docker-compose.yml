@@ -35,6 +35,16 @@ services:
     profiles:
       - compile
 
+  extract:
+    image: vmangos:extract
+    container_name: vmangos-extract
+    env_file:
+      - ./env/extract.env
+    build:
+      context: containers/extract
+      <<: *build-shared-conf
+    <<: *vmangos-shared-conf
+
   mangosd:
     image: vmangos:mangosd
     container_name: vmangos-mangosd
@@ -58,8 +68,8 @@ services:
     build:
       context: containers/mariadb
       <<: *build-shared-conf
-    # ports:
-      # - "3306:3306"
+    ports:
+      - "3306:3306"
     <<: *vmangos-shared-conf
 
   phpmyadmin:
