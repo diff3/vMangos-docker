@@ -8,6 +8,7 @@ x-vmangos-shared-conf: &vmangos-shared-conf
     - "/etc/localtime:/etc/localtime:ro"
     - "/etc/timezone:/etc/timezone:ro"
     - "./server:/opt/server:rw"
+    - "${WOW_PATH}:/opt/wow:rw"
   restart: unless-stopped
   tty: true
 
@@ -28,8 +29,6 @@ services:
     build:
       context: containers/compile
       <<: *build-shared-conf
-    volumes:
-      - "${WOW_PATH}:/opt/wow:rw"
     <<: *vmangos-shared-conf
     restart: "no"
     profiles:
