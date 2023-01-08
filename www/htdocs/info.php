@@ -1,16 +1,16 @@
-﻿<?php
+<?php
 
 // Configuration.
 // MaNGOSD IP.
-$realmip = "vmangos-realmd";
+$realmip = "127.0.0.1";
 // MaNGOSD port.
 $realmport = "8085";
 // MySQL IP (and port).
-$ip = "vmangos-mariadb:3306";
+$ip = "127.0.0.1:3306";
 // MySQL Username.
-$user = "root";
+$user = "mangos";
 // MySQL Password.
-$pass = "pwd";
+$pass = "mangos";
 // Realm database.
 $r_db = "realmd";
 // Character database.
@@ -97,20 +97,31 @@ $def = Array(
 $user_chars = "#[^a-zA-Z0-9_\-]#";
 $email_chars = "/^[^0-9][A-z0-9_]+([.][A-z0-9_]+)*[@][A-z0-9_]+([.][A-z0-9_]+)*[.][A-z]{2,4}$/";
 
-$result = "";
+$result;
 $realmname;
 $realmstatus = "<FONT COLOR=yellow>Unknown</FONT>";
 $uptime = "N/A";
 $accounts = "N/A";
 $totalchars = "N/A";
 $now = date("H:i:s");
-$con = @mysqli_connect($ip, $user, $pass);
-    
+######################$con = @mysql_connect($ip, $user, $pass);
+$con = @mysqli_connect($ip, $user, $pass, $c_db);
+        
 function make_players_array(){
 	global $con, $c_db, $pl_array, $maps_a;
     $i=0;
-	$query = @mysqli_query("SELECT * FROM " . $c_db . ".characters WHERE `online`='1' ORDER BY `name`", $con);
-	while($result = mysqli_fetch_assoc($query))
+
+
+
+$sql = "SELECT * FROM  characters WHERE `online`='1' ORDER BY `name`";
+	$qry = @mysqli_query($con, $sql );
+
+###########################	$query = @mysql_query("SELECT * FROM " . mysql_real_escape_string($c_db) . ".characters WHERE `online`='1' ORDER BY `name`", $con);
+
+
+	while($result = mysqli_fetch_assoc($qry))
+
+######################	while($result = mysql_fetch_assoc($query))
 	{
 		$char_data = ($result['level']);
 		$char_gender = ($result['gender']);
@@ -131,44 +142,72 @@ function make_players_array(){
 }
 
 if (!$con) {
-	$result = "> Unable to connect to database: " . mysqli_error();
+
+$result = "> Unable to connect to database: " . mysqli_connect_error();
+###############	$result = "> Unable to connect to database: " . mysql_error();
+
 }
 else
 {
-    $qry = @mysqli_query("select address from " . $r_db . ".realmlist where id = 1", $con);
+##$con = mysqli_connect('localhost','mangos','mangos','realmd');
+$con = mysqli_connect($ip, $user, $pass, $r_db);
+   if(! $con ) {
+      die('Could not connect: ' . mysqli_connect_error());
+   }
+#   echo 'Connected successfully2<br>';
+$sql = "SELECT address FROM  realmlist WHERE id= 1";
+	$qry = @mysqli_query($con, $sql );
+
+#############    $qry = @mysql_query("select address from " . mysql_real_escape_string($r_db) . ".realmlist where id = 1", $con);
     if ($qry)
     {
+
         while ($row = mysqli_fetch_assoc($qry))
+###############        while ($row = mysql_fetch_assoc($qry))
+
         {
             $realmip = $row['address'];
         }
     };
-    
     unset($qry);
-    $qry = @mysqli_query("select name from " . $r_db . ".realmlist where id = 1", $con);
+
+
+$sql = "SELECT name FROM  realmlist WHERE id= 1";
+	$qry = @mysqli_query($con, $sql );
+
+##################    $qry = @mysql_query("select name from " . mysql_real_escape_string($r_db) . ".realmlist where id = 1", $con);
     if ($qry)
     {
-        while ($row = mysql_fetch_assoc($qry))
+
+        while ($row = mysqli_fetch_assoc($qry))
+########################        while ($row = mysql_fetch_assoc($qry))
+
         {
             $realmname = $row['name'];
         }
     };
-
     if (! $sock = @fsockopen($realmip, $realmport, $num, $error, 3))
     {
         $realmstatus = "<FONT COLOR=red>Offline</FONT>";
     }
     else
     { 
-        $realmstatus = "<FONT COLOR=green>Online</FONT>"; 
+        $realmstatus = "<FONT COLOR=lime>Online</FONT>"; 
         fclose($sock);
     };
-    
     unset($qry);
-    $qry = @mysqli_query("SELECT * FROM " . mysqli_real_escape_string($r_db) . ".uptime ORDER BY `starttime` DESC LIMIT 1", $con);
+
+
+
+$sql = "SELECT * FROM  uptime uptime ORDER BY `starttime` DESC LIMIT 1";
+	$qry = @mysqli_query($con, $sql );
+
+##########################    $qry = @mysql_query("SELECT * FROM " . mysql_real_escape_string($r_db) . ".uptime ORDER BY `starttime` DESC LIMIT 1", $con);
     if ($qry)
     {
-        $uptime_results = mysql_fetch_array($qry);    
+
+        $uptime_results = mysqli_fetch_array($qry);    
+####################        $uptime_results = mysql_fetch_array($qry);    
 
         if ($uptime_results['uptime'] > 86400) { 
             $uptime =  round(($uptime_results['uptime'] / 24 / 60 / 60),2)." Days";
@@ -181,27 +220,48 @@ else
             $uptime =  round(($uptime_results['uptime'] / 60),2)." Min";
         }
     };
-    
     unset($qry);
-    $qry = @mysqli_query("select Count(id) from " . mysqli_real_escape_string($r_db) . ".account", $con);
+
+$sql = "SELECT Count(id) FROM  account";
+	$qry = @mysqli_query($con, $sql );
+
+###########################   $qry = @mysql_query("select Count(id) from " . mysql_real_escape_string($r_db) . ".account", $con);
+
+
     if ($qry)
     {
-        while ($row = mysql_fetch_assoc($qry))
+        while ($row = mysqli_fetch_assoc($qry))
+##################################        while ($row = mysql_fetch_assoc($qry))
+
         {
             $accounts = $row['Count(id)'];
         }
     };
-    
     unset($qry);
-    $qry = @mysql_query("select Count(guid) from " . mysql_real_escape_string($c_db) . ".characters", $con);
+
+$con = @mysqli_connect($ip, $user, $pass, $c_db);
+##$con = mysqli_connect('localhost','mangos','mangos','characters');
+
+   if(! $con ) {
+      die('Could not connect: ' . mysqli_connect_error());
+   }
+#   echo 'Connected successfully to characters 3<br>';
+
+$sql = "SELECT Count(guid) FROM  characters";
+	$qry = @mysqli_query($con, $sql );
+   
+##################    $qry = @mysql_query("select Count(guid) from " . mysql_real_escape_string($c_db) . ".characters", $con);
     if ($qry)
     {
-        while ($row = mysql_fetch_assoc($qry))
+
+        while ($row = mysqli_fetch_assoc($qry))
+##################        while ($row = mysql_fetch_assoc($qry))
+
         {
             $totalchars = $row['Count(guid)'];
         }
     };
-    
+
     $onlineplayers=make_players_array();
 
     if (!$sort = &$_GET['s']) $sort=0;
@@ -230,8 +290,8 @@ else
         $list.= "<tr>
         <td>$tmpnum</td>
         <td>$name</td>
-        <td align=center><img alt=$res_race src='".$img_base."race/".$race."-$gender.gif' height=18 width=18></td>
-        <td align=center><img alt=$res_class src='".$img_base."class/$class.gif' height=18 width=18></td>
+        <td align=center><img alt=$res_race src='".$img_base."race/".$race."-$gender.gif' height=22 width=22></td>
+        <td align=center><img alt=$res_class src='".$img_base."class/$class.gif' height=22 width=22></td>
         <td align=center>$lvl</td>
         <td>$loc</td>
         </tr>";

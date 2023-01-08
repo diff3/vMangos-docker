@@ -6,3 +6,4 @@ etc/*
 TODO.md
 www/*
 !www/.keep
+assets
